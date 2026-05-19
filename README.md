@@ -308,10 +308,7 @@ HuggingFace.Tokenizers/
 ├── tests/
 │   ├── HuggingFace.Tokenizers.Tests/           # MSTest v4 + MTP 测试（719 个）
 │   └── HuggingFace.Tokenizers.Benchmarks/      # 性能基准测试
-├── .agents/
-│   ├── CONTEXT.md                              # 持久上下文：技术决策、已知问题
-│   └── TODO.md                                 # 临时任务
-└── AGENTS.md                                   # AI 辅助开发规范
+
 ```
 
 **`HuggingFace.Tokenizers`** 包含所有实现：Abstractions（核心接口 + 共享类型）、Models、Normalizers、PreTokenizers、Decoders、Processors、Internal（工具类）和 Serialization。核心接口和共享类型（`Tokenizer`、`Encoding`、`NormalizedString`、`PreTokenizedString`、`Token`、`AddedToken`、`DecodeStream`、`Pattern` 等）位于 `Abstractions/` 子目录。
@@ -327,23 +324,6 @@ HuggingFace.Tokenizers/
 | 包管理 | NuGet |
 | 外部依赖 | 零（仅 .NET 10 BCL） |
 | AOT 兼容 | `IsAotCompatible=true`，无反射，SourceGenerator 编译期工厂 |
-
-### 编码规范
-
-- 遵循 SOLID 原则，一个类一个文件
-- 命名：PascalCase（类/方法/属性）、camelCase（参数/局部变量）、`_camelCase`（私有字段）
-- 公共 API 必须 XML 文档注释（`/// <summary>`）
-- 注释使用中文，描述"为什么"而非"做什么"
-- 禁止空 `catch` 块、`async void`、`.Result` / `.Wait()`
-- `dotnet build` 必须零 Warning
-
-### 设计原则
-
-- **S — 单一职责**：模型、标准化器、预分词器、解码器和后处理器相互独立
-- **O — 开闭原则**：通过实现接口扩展管道，无需修改现有代码
-- **L — 里氏替换**：同一接口的所有实现可互换
-- **I — 接口隔离**：小而专注的接口
-- **D — 依赖倒置**：`Tokenizer` 编排器依赖抽象而非具体实现
 
 ## 测试说明
 
@@ -372,29 +352,10 @@ dotnet run --file tests/benchmarks/run.cs --rust-dir ../tokenizers
 
 ### 性能优化
 
-Encoding 内部采用 `Memory<T>` + Copy-on-Write 架构：
-
-- **零拷贝 Slice**：截断操作从 7 次 `Array.Copy` 降为 0 分配，通过 `_start`/`_length` 共享底层数组
-- **写时拷贝（COW）**：`Merge`/`Pad`/`SetTypeIds` 等修改操作前自动 `EnsureWritable()`，只在需要时拷贝
-- **特殊 token 缓存**：`MakeSpecialToken` 使用 `ConcurrentDictionary` 缓存单元素 Encoding，命中时零分配
-- **Utf8Vocab 反向索引**：`Id → bytes` O(1) 查找，替代原来的 O(n) 线性扫描
-- **零拷贝 Span API**：`IdsSpan`/`TypeIdsSpan`/`TokensSpan` 等属性提供 `ReadOnlySpan<T>` 视图
-
-公共 API（`GetIds()` 等）保持返回 `T[]` 数组以向后兼容，内部代码全部使用 `ReadOnlySpan<T>` 操作。
-
 ### 与 Rust 原版的差异
 
-- **偏移类型**：`Encode()` 默认返回字节偏移（与 Rust/Python/JS 一致）。`EncodeCharOffsets()` 将字节偏移转换为 .NET char 偏移。
-- **多模式匹配**：`AddedVocabulary` 使用自研 `AhoCorasickMatcher`（Aho-Corasick 自动机），O(n + m + z) 时间复杂度。
-- **BPE 缓存**：使用 `ThreadLocal` + generation-based 方案，per-thread 无锁缓存，`ClearCache()` O(1) 原子递增，与 Rust `BPE_LOCAL_CACHE` 行为一致。
 - **正则表达式**：.NET `System.Text.RegularExpressions.Regex` 对 lookahead/lookbehind 支持有限，使用高级正则特性的分词器可能产生不同结果。
-- **序列化 enum 格式**：Rust serde 默认使用 variant 名（PascalCase，如 `LongestFirst`），`PrependScheme` 等使用 `#[serde(rename_all = "snake_case")]`。C# 通过 `EnumNaming = SnakeCase` + `ToLowerInvariant()` 兼容处理两种格式，序列化往返一致。
 
-### 关键技术决策
-
-- **AhoCorasick 自动机**：.NET 无现成 daachorse 实现，自研 AhoCorasickMatcher（O(n+m+z) 时间复杂度）
-- **.NET Regex 替代 fancy-regex/oniguruma**：内置 Regex 无 lookbehind 限制，已文档化为已知差异
-- **Wrapper 模式**（NormalizerWrapper 等）：支持委托包装，扩展性强
 
 ## 部署与配置
 

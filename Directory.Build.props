@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      程序集版本与 Rust tokenizers 库版本对齐，方便追踪上游更新。
+      Rust 版本: 0.23.2-dev.0 (commit 22d54d3)
+      更新时同步修改此处 + InformationalVersion 中的 Rust commit。
+    -->
+    <Version>0.23.2</Version>
+    <AssemblyVersion>0.23.2.0</AssemblyVersion>
+    <FileVersion>0.23.2.0</FileVersion>
+    <InformationalVersion>0.23.2-dev.0+rust.22d54d3</InformationalVersion>
+    <Authors>HuggingFace.Tokenizers Contributors</Authors>
+    <Description>C# port of HuggingFace tokenizers (Rust). Version aligned with upstream rust-tokenizers 0.23.2-dev.0 (22d54d3).</Description>
+  </PropertyGroup>
+</Project>

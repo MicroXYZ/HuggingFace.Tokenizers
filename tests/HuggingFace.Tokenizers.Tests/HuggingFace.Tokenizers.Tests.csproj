@@ -1,0 +1,19 @@
+<Project Sdk="MSTest.Sdk/4.2.2">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HuggingFace.Tokenizers\HuggingFace.Tokenizers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="data\small.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

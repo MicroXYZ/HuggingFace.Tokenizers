@@ -1,0 +1,11 @@
+<Project>
+  <!-- 
+    工作区：SourceGenerator 是 netstandard2.0 分析器，不参与 AOT 发布。
+    覆盖 PublishAot 防止 NETSDK1207 错误。
+  -->
+  <PropertyGroup>
+    <PublishAot>false</PublishAot>
+    <PublishTrimmed>false</PublishTrimmed>
+    <_EnableAotAnalyzer>false</_EnableAotAnalyzer>
+  </PropertyGroup>
+</Project>

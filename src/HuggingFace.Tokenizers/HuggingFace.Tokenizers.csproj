@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>HuggingFace.Tokenizers</RootNamespace>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <!-- G.2: PGO 优化数据目录（benchmark 运行时自动收集） -->
+    <PgoOptimizationData>$(MSBuildProjectDirectory)/pgo/</PgoOptimizationData>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="HuggingFace.Tokenizers.Tests" />
+    <InternalsVisibleTo Include="HuggingFace.Tokenizers.Benchmarks" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- G.3: 保留关键泛型特化，AOT 发布时确保不被裁剪 -->
+    <TrimmerRootAssembly Include="HuggingFace.Tokenizers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 源生成器：AOT 发布时使用预编译 DLL，避免 NETSDK1207 -->
+    <ProjectReference Include="..\HuggingFace.Tokenizers.SourceGenerator\HuggingFace.Tokenizers.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" Condition="'$(PublishAot)' != 'true'" />
+    <Analyzer Include="..\HuggingFace.Tokenizers.SourceGenerator\bin\Release\netstandard2.0\HuggingFace.Tokenizers.SourceGenerator.dll" Condition="'$(PublishAot)' == 'true'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Hashing" Version="10.0.8" />
+  </ItemGroup>
+
+</Project>

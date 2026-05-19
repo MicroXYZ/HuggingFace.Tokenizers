@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HuggingFace.Tokenizers.SourceGenerator/HuggingFace.Tokenizers.SourceGenerator.csproj" />
+    <Project Path="src/HuggingFace.Tokenizers/HuggingFace.Tokenizers.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HuggingFace.Tokenizers.Benchmarks/HuggingFace.Tokenizers.Benchmarks.csproj" />
+    <Project Path="tests/HuggingFace.Tokenizers.Tests/HuggingFace.Tokenizers.Tests.csproj" />
+  </Folder>
+  <Folder Name="/解决方案项/">
+    <File Path="AGENTS.md" />
+    <File Path="README.md" />
+  </Folder>
+</Solution>
